@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Local Essential Delivery System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: '#2563eb',
+                            dark: '#3b82f6'
+                        },
+                        secondary: {
+                            light: '#10b981',
+                            dark: '#34d399'
+                        },
+                        accent: {
+                            light: '#f97316',
+                            dark: '#fb923c'
+                        }
+                    },
+                    animation: {
+                        'fadeInUp': 'fadeInUp 1s ease-out',
+                        'slideInRight': 'slideInRight 1s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'spin-slow': 'spin 4s linear infinite',
+                        'gradient-x': 'gradient-x 3s ease infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInRight: {
+                            '0%': { opacity: '0', transform: 'translateX(50px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' },
+                        },
+                        'gradient-x': {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        .hero-slide {
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(37, 99, 235, 0.4), rgba(16, 185, 129, 0.6));
+        }
+        @media (max-width: 768px) {
+            .hero-slide {
+                background-attachment: scroll;
+            }
+        }
+        .dark .hero-overlay {
+            background: linear-gradient(to bottom, rgba(30, 58, 138, 0.4), rgba(6, 95, 70, 0.6));
+        }
+        .bg-gradient-animate {
+            background: linear-gradient(270deg, #2563eb, #10b981, #f97316);
+            background-size: 600% 600%;
+            animation: gradient-x 15s ease infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-300">
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+        <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+        <i class="fas fa-moon text-blue-300 hidden dark:block"></i>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl sticky top-0 z-40 border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary-light to-secondary-light dark:from-primary-dark dark:to-secondary-dark bg-clip-text text-transparent">
+                        Smart Local Delivery
+                    </a>
+                </div>
+                <div class="hidden lg:flex items-center space-x-6">
+                    <button onclick="openPanel('admin')" class="px-4 py-2 rounded-xl font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:shadow-md transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-user-shield"></i><span>Admin Panel</span>
+                    </button>
+                    <button onclick="openPanel('shop')" class="px-4 py-2 rounded-xl font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:shadow-md transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-store"></i><span>Shop Owner</span>
+                    </button>
+                    <button onclick="openPanel('user')" class="px-4 py-2 rounded-xl font-semibold text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:shadow-md transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-user"></i><span>User Panel</span>
+                    </button>
+                    <button onclick="openPanel('delivery')" class="px-4 py-2 rounded-xl font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:shadow-md transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-truck"></i><span>Delivery Partner</span>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" onclick="openModal('login')" class="hidden lg:inline-flex bg-primary-light dark:bg-primary-dark text-white px-6 py-2 rounded-xl hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 shadow-lg hover:shadow-xl transition-all duration-300 font-semibold">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                    <button onclick="openModal('register')" class="bg-gradient-to-r from-accent-light to-accent-light/80 dark:from-accent-dark dark:to-accent-dark/80 text-white px-6 py-2 rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold shadow-lg">
+                        <i class="fas fa-user-plus mr-2"></i>Register
+                    </button>
+                </div>
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-bars text-xl text-gray-700 dark:text-gray-300"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white dark:bg-gray-800 shadow-2xl border-t border-gray-200 dark:border-gray-700">
+            <div class="px-4 pt-4 pb-6 space-y-3">
+                <button onclick="openPanel('admin')" class="w-full flex items-center px-4 py-3 rounded-xl font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:shadow-md transition-all">
+                    <i class="fas fa-user-shield w-6 mr-3"></i>Admin Panel
+                </button>
+                <button onclick="openPanel('shop')" class="w-full flex items-center px-4 py-3 rounded-xl font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:shadow-md transition-all">
+                    <i class="fas fa-store w-6 mr-3"></i>Shop Owner Panel
+                </button>
+                <button onclick="openPanel('user')" class="w-full flex items-center px-4 py-3 rounded-xl font-semibold text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:shadow-md transition-all">
+                    <i class="fas fa-user w-6 mr-3"></i>User Panel
+                </button>
+                <button onclick="openPanel('delivery')" class="w-full flex items-center px-4 py-3 rounded-xl font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:shadow-md transition-all">
+                    <i class="fas fa-truck w-6 mr-3"></i>Delivery Partner Panel
+                </button>
+                <button onclick="openModal('login')" class="w-full flex items-center justify-center bg-primary-light dark:bg-primary-dark text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 shadow-lg hover:shadow-xl transition-all">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="swiper hero-swiper h-screen w-full">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide hero-slide" style="background-image: url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="relative z-10 flex flex-col items-center justify-center h-screen text-center text-white px-4 animate-fadeInUp">
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text drop-shadow-2xl leading-tight">Smart Local<br>Essential Delivery</h1>
+                        <p class="text-lg md:text-xl lg:text-2xl mb-10 max-w-2xl mx-auto opacity-95 drop-shadow-lg animate-slideInRight animation-delay-300">Delivering essentials to your doorstep with speed, reliability, and smart technology.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-bounce-slow">
+                            <button onclick="openModal('register')" class="bg-accent-light hover:bg-accent-light/90 dark:bg-accent-dark dark:hover:bg-accent-dark/90 text-white px-10 py-4 rounded-2xl text-lg lg:text-xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 transform">Get Started Free</button>
+                            <button onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})" class="border-4 border-white/50 hover:border-white text-white px-10 py-4 rounded-2xl text-lg lg:text-xl font-bold hover:bg-white/20 dark:hover:bg-gray-800/20 backdrop-blur-sm transition-all duration-300">Watch Demo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide hero-slide" style="background-image: url('https://images.unsplash.com/photo-1571171638497-7a6b8f9412e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="relative z-10 flex flex-col items-center justify-center h-screen text-center text-white px-4">
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text drop-shadow-2xl animate-fadeInUp">Multi-Vendor<br>Marketplace</h1>
+                        <p class="text-lg md:text-xl lg:text-2xl mb-10 max-w-2xl mx-auto opacity-95 drop-shadow-lg animate-slideInRight animation-delay-300">Connect with local shops for fresh essentials anytime, anywhere.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-pulse-slow">
+                            <button onclick="openModal('register')" class="bg-accent-light hover:bg-accent-light/90 dark:bg-accent-dark dark:hover:bg-accent-dark/90 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">Join as Shop</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide hero-slide" style="background-image: url('https://images.unsplash.com/photo-1542435503-956c469947f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="relative z-10 flex flex-col items-center justify-center h-screen text-center text-white px-4">
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text drop-shadow-2xl animate-fadeInUp">Partner with Us</h1>
+                        <p class="text-lg md:text-xl lg:text-2xl mb-10 max-w-2xl mx-auto opacity-95 drop-shadow-lg animate-slideInRight animation-delay-300">Earn more as a delivery partner with real-time jobs and easy payouts.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center animate-spin-slow">
+                            <button onclick="openModal('register')" class="bg-secondary-light hover:bg-secondary-light/90 dark:bg-secondary-dark dark:hover:bg-secondary-dark/90 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">Become Partner</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide hero-slide" style="background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920217?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');">
+                    <div class="hero-overlay"></div>
+                    <div class="relative z-10 flex flex-col items-center justify-center h-screen text-center text-white px-4">
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text drop-shadow-2xl animate-fadeInUp">Seamless User Experience</h1>
+                        <p class="text-lg md:text-xl lg:text-2xl mb-10 max-w-2xl mx-auto opacity-95 drop-shadow-lg animate-slideInRight animation-delay-300">Easy ordering from local vendors with intuitive interface.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button onclick="openModal('register')" class="bg-primary-light hover:bg-primary-light/90 dark:bg-primary-dark dark:hover:bg-primary-dark/90 text-white px-10 py-4 rounded-2xl text-lg font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300">Start Ordering</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"></div>
+        </div>
+    </section>
+
+    <!-- Description Section -->
+    <section class="py-24 md:py-32 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900/30" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-6" data-aos="fade-down">A Comprehensive Platform for Essential Delivery</h2>
+                <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">Serving multiple user roles with seamless access to local essential goods delivery services. Fast, reliable, and smart.</p>
+            </div>
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div data-aos="fade-right" data-aos-delay="100">
+                    <h3 class="text-3xl md:text-4xl font-bold text-primary-light dark:text-primary-dark mb-8 leading-tight">Our Mission: Local Essentials, Delivered Smartly</h3>
+                    <div class="space-y-6 text-lg text-gray-700 dark:text-gray-300">
+                        <p>A comprehensive web platform and mobile-responsive landing page designed for efficiency. We cover wide service areas with benefits like instant delivery, competitive pricing, and eco-friendly options.</p>
+                        <p><strong>How it works:</strong> Browse local shops, place orders, track in real-time, and receive fresh essentials at your door – all managed through intuitive panels for every role.</p>
+                    </div>
+                    <div class="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3">
+                        <div class="flex flex-col items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <i class="fas fa-bolt text-3xl text-secondary-light dark:text-secondary-dark mb-2 animate-pulse-slow"></i>
+                            <span class="font-semibold text-sm text-gray-900 dark:text-white">Lightning Fast</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <i class="fas fa-lock text-3xl text-primary-light dark:text-primary-dark mb-2 animate-bounce-slow"></i>
+                            <span class="font-semibold text-sm text-gray-900 dark:text-white">Secure</span>
+                        </div>
+                        <div class="flex flex-col items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <i class="fas fa-mobile-alt text-3xl text-accent-light dark:text-accent-dark mb-2 animate-spin-slow"></i>
+                            <span class="font-semibold text-sm text-gray-900 dark:text-white">Mobile Ready</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative" data-aos="fade-left" data-aos-delay="300">
+                    <img src="https://images.unsplash.com/photo-1558618047-3c8c76fdd9e8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Delivery Tracking" class="w-full rounded-3xl shadow-2xl hover:scale-105 transition-transform duration-500 mx-auto">
+                    <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-animate opacity-30 rounded-full blur-3xl animate-pulse-slow"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Features Section -->
+    <section id="features" class="py-24 md:py-32 bg-white dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20" data-aos="fade-down">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-6">Advanced Features</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Powered by cutting-edge technology for seamless experience across all panels.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="group bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/30 p-10 rounded-3xl shadow-xl hover:shadow-3xl hover:-translate-y-4 transition-all duration-500 border border-blue-100 dark:border-blue-900/50" data-aos="fade-up" data-aos-delay="0">
+                    <div class="w-20 h-20 bg-primary-light dark:bg-primary-dark rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                        <i class="fas fa-map-marked-alt text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">Real-time Order Tracking</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-center leading-relaxed">Monitor every step of your delivery with live GPS updates and estimated arrival times.</p>
+                </div>
+                <div class="group bg-gradient-to-br from-white to-emerald-50 dark:from-gray-800 dark:to-emerald-900/30 p-10 rounded-3xl shadow-xl hover:shadow-3xl hover:-translate-y-4 transition-all duration-500 border border-emerald-100 dark:border-emerald-900/50" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-20 h-20 bg-secondary-light dark:bg-secondary-dark rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                        <i class="fas fa-store-alt text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">Multi-Vendor Support</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-center leading-relaxed">Access products from multiple local shops in one app – more choices, better deals.</p>
+                </div>
+                <div class="group bg-gradient-to-br from-white to-orange-50 dark:from-gray-800 dark:to-orange-900/30 p-10 rounded-3xl shadow-xl hover:shadow-3xl hover:-translate-y-4 transition-all duration-500 border border-orange-100 dark:border-orange-900/50" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-20 h-20 bg-accent-light dark:bg-accent-dark rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                        <i class="fas fa-truck-fast text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">Delivery Partner Management</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-center leading-relaxed">Efficient tools for partners to accept jobs, optimize routes, and manage earnings.</p>
+                </div>
+                <div class="group bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/30 p-10 rounded-3xl shadow-xl hover:shadow-3xl hover:-translate-y-4 transition-all duration-500 border border-purple-100 dark:border-purple-900/50" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-20 h-20 bg-purple-500 dark:bg-purple-400 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                        <i class="fas fa-credit-card text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">Secure Payments & Order History</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-center leading-relaxed">Integrated secure payments with full order history, reorders, and analytics for all users.</p>
+                </div>
+                <div class="group bg-gradient-to-br from-white to-pink-50 dark:from-gray-800 dark:to-pink-900/30 p-10 rounded-3xl shadow-xl hover:shadow-3xl hover:-translate-y-4 transition-all duration-500 border border-pink-100 dark:border-pink-900/50 lg:col-span-2 md:col-span-1" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-20 h-20 bg-pink-500 dark:bg-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                        <i class="fas fa-robot text-3xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">AI-Powered Recommendations</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-center leading-relaxed">Personalized suggestions based on your preferences and past orders for a smarter shopping experience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 md:py-32 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/30 dark:to-emerald-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20" data-aos="fade-down">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-6">Flexible Pricing Plans</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Choose the perfect plan for your role in the Smart Local Delivery ecosystem.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 border border-gray-200 dark:border-gray-700 group" data-aos="fade-up" data-aos-delay="0">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-user text-4xl text-primary-light dark:text-primary-dark mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Customer Plan</h3>
+                        <p class="text-gray-600 dark:text-gray-300">For users ordering essentials</p>
+                    </div>
+                    <div class="text-center mb-8">
+                        <span class="text-5xl font-bold text-gray-900 dark:text-white">$0</span>
+                        <span class="text-gray-500 dark:text-gray-400">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Unlimited Orders</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Real-time Tracking</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Personalized Recommendations</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-times text-red-500 mr-3"></i>Priority Support</li>
+                    </ul>
+                    <button onclick="openModal('register')" class="w-full bg-primary-light dark:bg-primary-dark text-white py-4 rounded-xl font-bold hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 transition-all group-hover:scale-105">Sign Up Free</button>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 border border-gray-200 dark:border-gray-700 group relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 bg-yellow-400 text-white px-4 py-1 rounded-bl-xl font-bold">Popular</div>
+                    <div class="text-center mb-6">
+                        <i class="fas fa-store text-4xl text-secondary-light dark:text-secondary-dark mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Shop Owner Plan</h3>
+                        <p class="text-gray-600 dark:text-gray-300">For local vendors</p>
+                    </div>
+                    <div class="text-center mb-8">
+                        <span class="text-5xl font-bold text-gray-900 dark:text-white">$29</span>
+                        <span class="text-gray-500 dark:text-gray-400">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Product Listing</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Order Management</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Analytics Dashboard</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Priority Support</li>
+                    </ul>
+                    <button onclick="openModal('register')" class="w-full bg-secondary-light dark:bg-secondary-dark text-white py-4 rounded-xl font-bold hover:bg-secondary-light/90 dark:hover:bg-secondary-dark/90 transition-all group-hover:scale-105">Get Started</button>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 border border-gray-200 dark:border-gray-700 group" data-aos="fade-up" data-aos-delay="200">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-truck text-4xl text-accent-light dark:text-accent-dark mb-4"></i>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Delivery Partner Plan</h3>
+                        <p class="text-gray-600 dark:text-gray-300">For delivery personnel</p>
+                    </div>
+                    <div class="text-center mb-8">
+                        <span class="text-5xl font-bold text-gray-900 dark:text-white">$19</span>
+                        <span class="text-gray-500 dark:text-gray-400">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Job Assignments</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Route Optimization</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>Earnings Tracker</li>
+                        <li class="flex items-center text-gray-700 dark:text-gray-300"><i class="fas fa-check text-green-500 mr-3"></i>24/7 Support</li>
+                    </ul>
+                    <button onclick="openModal('register')" class="w-full bg-accent-light dark:bg-accent-dark text-white py-4 rounded-xl font-bold hover:bg-accent-light/90 dark:hover:bg-accent-dark/90 transition-all group-hover:scale-105">Join Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 md:py-32 bg-gradient-animate text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="relative z-10 max-w-4xl mx-auto text-center px-4">
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6 drop-shadow-2xl" data-aos="zoom-in">Ready to Transform Your Delivery Experience?</h2>
+            <p class="text-xl md:text-2xl mb-12 opacity-95 drop-shadow-lg" data-aos="zoom-in" data-aos-delay="200">Join thousands of satisfied users, shops, and partners today.</p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center" data-aos="zoom-in" data-aos-delay="400">
+                <button onclick="openModal('register')" class="bg-white text-primary-light dark:text-primary-dark px-12 py-6 rounded-3xl text-xl font-bold shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-500 transform">Create Account</button>
+                <button onclick="openModal('login')" class="border-4 border-white text-white px-12 py-6 rounded-3xl text-xl font-bold hover:bg-white/20 dark:hover:bg-gray-800/20 transition-all duration-500 shadow-2xl hover:shadow-3xl">Login Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 dark:bg-gray-950 text-gray-300 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-2xl font-bold text-white mb-6 bg-gradient-to-r from-primary-light to-secondary-light dark:from-primary-dark dark:to-secondary-dark bg-clip-text">Smart Local Essential Delivery System</h3>
+                <p class="text-sm leading-relaxed mb-6">Delivering essentials smarter, faster, locally.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-primary-light dark:bg-primary-dark rounded-xl flex items-center justify-center hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 transition-all"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 bg-secondary-light dark:bg-secondary-dark rounded-xl flex items-center justify-center hover:bg-secondary-light/90 dark:hover:bg-secondary-dark/90 transition-all"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="w-10 h-10 bg-accent-light dark:bg-accent-dark rounded-xl flex items-center justify-center hover:bg-accent-light/90 dark:hover:bg-accent-dark/90 transition-all"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-white mb-6">Panels</h4>
+                <ul class="space-y-3">
+                    <li><a href="#" onclick="openPanel('admin')" class="hover:text-white transition-colors flex items-center"><i class="fas fa-arrow-right mr-2 text-secondary-light dark:text-secondary-dark"></i>Admin</a></li>
+                    <li><a href="#" onclick="openPanel('shop')" class="hover:text-white transition-colors flex items-center"><i class="fas fa-arrow-right mr-2 text-secondary-light dark:text-secondary-dark"></i>Shop Owner</a></li>
+                    <li><a href="#" onclick="openPanel('user')" class="hover:text-white transition-colors flex items-center"><i class="fas fa-arrow-right mr-2 text-secondary-light dark:text-secondary-dark"></i>User</a></li>
+                    <li><a href="#" onclick="openPanel('delivery')" class="hover:text-white transition-colors flex items-center"><i class="fas fa-arrow-right mr-2 text-secondary-light dark:text-secondary-dark"></i>Delivery Partner</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-white mb-6">Features</h4>
+                <ul class="space-y-3">
+                    <li><a href="#features" class="hover:text-white transition-colors">Real-time Tracking</a></li>
+                    <li><a href="#features" class="hover:text-white transition-colors">Secure Payments</a></li>
+                    <li><a href="#features" class="hover:text-white transition-colors">Order History</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-white mb-6">Contact</h4>
+                <p class="mb-4"><i class="fas fa-envelope mr-2"></i>info@smartlocaldelivery.com</p>
+                <p><i class="fas fa-phone mr-2"></i>+1 (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-12 pt-8 text-center text-sm">
+            <p>&copy; 2024 Smart Local Essential Delivery System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 z-50 overflow-y-auto" role="dialog">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 transition-opacity" onclick="closeModal('login')"></div>
+            <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-3xl w-full max-w-md mx-4 transform scale-100 overflow-hidden" data-aos="zoom-in">
+                <div class="absolute top-6 right-6 z-10">
+                    <button onclick="closeModal('login')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-8 pt-20 pb-12">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-primary-light dark:bg-primary-dark rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-2xl">
+                            <i class="fas fa-sign-in-alt text-3xl text-white"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2" id="loginTitle">Login to Your Panel</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Welcome back! Please sign in to your account.</p>
+                    </div>
+                    <form onsubmit="handleLogin(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark focus:border-primary-light dark:focus:border-primary-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter your email">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                            <input type="password" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark focus:border-primary-light dark:focus:border-primary-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-primary-light to-secondary-light dark:from-primary-dark dark:to-secondary-dark text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">Sign In</button>
+                    </form>
+                    <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-300">
+                        Don't have an account? 
+                        <button onclick="closeModal('login'); openModal('register')" class="text-primary-light dark:text-primary-dark font-semibold hover:underline">Register here</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="hidden fixed inset-0 z-50 overflow-y-auto" role="dialog">
+        <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 transition-opacity" onclick="closeModal('register')"></div>
+            <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-3xl w-full max-w-md mx-4 transform scale-100 overflow-hidden" data-aos="zoom-in">
+                <div class="absolute top-6 right-6 z-10">
+                    <button onclick="closeModal('register')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-8 pt-20 pb-12">
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-accent-light dark:bg-accent-dark rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-2xl">
+                            <i class="fas fa-user-plus text-3xl text-white"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Join the Smart Local Delivery network today.</p>
+                    </div>
+                    <form onsubmit="handleRegister(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                            <input type="text" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-accent-light dark:focus:border-accent-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter your full name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-accent-light dark:focus:border-accent-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter your email">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Phone</label>
+                            <input type="tel" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-accent-light dark:focus:border-accent-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Enter your phone">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                            <input type="password" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-accent-light dark:focus:border-accent-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Create a password">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role</label>
+                            <select id="userRole" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-accent-light dark:focus:border-accent-dark transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                <option value="">Select your role</option>
+                                <option value="user">Customer (User)</option>
+                                <option value="shop">Shop Owner</option>
+                                <option value="delivery">Delivery Partner</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-accent-light to-accent-light/80 dark:from-accent-dark dark:to-accent-dark/80 text-white py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">Register Now</button>
+                    </form>
+                    <p class="text-center mt-6 text-sm text-gray-600 dark:text-gray-300">
+                        Already have an account? 
+                        <button onclick="closeModal('register'); openModal('login')" class="text-primary-light dark:text-primary-dark font-semibold hover:underline">Sign in here</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // AOS Init
+        AOS.init({
+            duration: 1200,
+            once: true,
+            offset: 120,
+            easing: 'ease-out-cubic'
+        });
+
+        // Swiper Hero
+        const swiper = new Swiper('.hero-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            effect: 'creative',
+            creativeEffect: {
+                prev: {
+                    shadow: true,
+                    translate: ['-120%', 0, -500],
+                },
+                next: {
+                    shadow: true,
+                    translate: ['120%', 0, -500],
+                },
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+                dynamicBullets: true,
+            },
+            speed: 1200
+        });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('dark');
+        }
+
+        // Navbar Mobile
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-button');
+            menu.classList.toggle('hidden');
+            const icon = btn.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        }
+
+        // Modals
+        let currentRole = '';
+        function openModal(type) {
+            document.getElementById(`${type}Modal`).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            AOS.refresh();
+        }
+
+        function closeModal(type) {
+            document.getElementById(`${type}Modal`).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openPanel(role) {
+            currentRole = role;
+            const title = document.getElementById('loginTitle');
+            title.textContent = `Login to ${role.charAt(0).toUpperCase() + role.slice(1)} Panel`;
+            openModal('login');
+        }
+
+        // Form Handlers (Demo)
+        function handleLogin(e) {
+            e.preventDefault();
+            alert('Login functionality coming soon! Check console.');
+            console.log('Login submitted for role:', currentRole);
+            closeModal('login');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const role = document.getElementById('userRole').value;
+            alert(`Registration for ${role} submitted! Feature coming soon.`);
+            console.log('Register submitted with role:', role);
+            closeModal('register');
+        }
+
+        // Close modals on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('login');
+                closeModal('register');
+            }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
